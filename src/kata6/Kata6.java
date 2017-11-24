@@ -10,35 +10,32 @@ import java.util.List;
 import model.Histogram;
 import model.Mail;
 import view.HistogramDisplay;
-import view.MailHistogramBuilder;
-import view.MailListReader;
+import view.HistogramBuilder;
+import view.FileMailListReader;
 
 public class Kata6 {
     private List<Mail> mailList;
     private Histogram<String> histogram;    
     
     public static void main(String[] args) throws FileNotFoundException, IOException {
-        Kata6 kata4 = new Kata6();
-        kata4.execute();
-    }
-
-    public void execute() throws IOException{
-      input();
-      process();
-      output();
-    }
-    
-    public void input() throws IOException{
-        String filename = new String("C:\\Users\\usuario\\Desktop\\Kata6\\src\\emails.txt");
-        mailList = MailListReader.read(filename);
-    }
-    
-    public void process(){
-        histogram = MailHistogramBuilder.build(mailList);
-    }
-    
-    public void output(){
-        HistogramDisplay histodisplay = new HistogramDisplay(histogram);
-        histodisplay.execute();
+        String nameFile="C:\\Users\\usuario\\Desktop\\Kata6\\src\\emails.txt";
+        List<Mail> listMail = FileMailListReader.read(nameFile);
+        HistogramBuilder<Mail> builder = new HistogramBuilder<>(listMail);
+        
+        Histogram<String> domains = builder.build(new Attribute<Mail, String>(){
+            @Override
+            public String get(Mail item){
+                return item.getMail().split("@")[1];
+            }
+        });
+        new HistogramDisplay(domains, "Dominios").execute();
+        
+        Histogram<Character> letters = builder.build(new Attribute<Mail, Character>(){
+            @Override
+            public Character get(Mail item){
+                return item.getMail().charAt(0);
+            }
+        });
+        new HistogramDisplay (letters, "Primer Caracter").execute();
     }
 }
