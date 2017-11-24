@@ -5,10 +5,13 @@
 package kata6;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import model.Histogram;
 import model.Mail;
+import model.Person;
+import view.DataBaseList;
 import view.HistogramDisplay;
 import view.HistogramBuilder;
 import view.FileMailListReader;
@@ -17,7 +20,7 @@ public class Kata6 {
     private List<Mail> mailList;
     private Histogram<String> histogram;    
     
-    public static void main(String[] args) throws FileNotFoundException, IOException {
+    public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException, SQLException {
         String nameFile="C:\\Users\\usuario\\Desktop\\Kata6\\src\\emails.txt";
         List<Mail> listMail = FileMailListReader.read(nameFile);
         HistogramBuilder<Mail> builder = new HistogramBuilder<>(listMail);
@@ -37,5 +40,24 @@ public class Kata6 {
             }
         });
         new HistogramDisplay (letters, "Primer Caracter").execute();
+        
+        List<Person> people = DataBaseList.read();
+        HistogramBuilder<Person> builderPerson = new HistogramBuilder<>(people);
+        
+        Histogram<Character> gender = builderPerson.build(new Attribute<Person, Character>(){
+            @Override
+            public Character get(Person item){
+                return item.getGender();
+            }
+        });
+        new HistogramDisplay(gender, "Gender").execute();
+        
+        Histogram<Float> weight = builderPerson.build(new Attribute<Person, Float>(){
+            @Override
+            public Float get(Person item){
+                return item.getWeight();
+            }
+        });
+        new HistogramDisplay(weight, "Weight").execute();
     }
 }
